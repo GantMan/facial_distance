@@ -84,6 +84,10 @@ body {
   font-size: large;
 }
 
+#detection {
+  height: 300px;
+}
+
 .appStore {
   width: 100%;
 }

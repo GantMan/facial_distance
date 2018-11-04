@@ -17,7 +17,7 @@ export default class App extends Component {
     await faceapi.loadFaceLandmarkModel('/face_model')
     await faceapi.loadFaceRecognitionModel('/face_model')
     this.setState({
-      status: 'Models Loaded'
+      status: 'Ready'
     })
   }
 
@@ -40,7 +40,7 @@ export default class App extends Component {
     )
 
     this.setState({
-      status: 'Done',
+      status: 'Ready',
       classification: distance
     })
   }
@@ -48,7 +48,7 @@ export default class App extends Component {
   setFile = file => {
     const reader = new FileReader()
     reader.onload = e => {
-      this.setState({ thing: e.target.result })
+      this.setState({ classification: null, thing: e.target.result })
     }
 
     reader.readAsDataURL(file)
@@ -60,6 +60,19 @@ export default class App extends Component {
     this.checkFaces()
   }
 
+  renderNicImage = () => {
+    let nicPath = ''
+    if (this.state.status === 'Ready') {
+      if (this.state.classification) {
+        nicPath =
+          Number(this.state.classification) < 0.6 ? './yes.png' : './no.png'
+      }
+    } else {
+      nicPath = './processingFaces.gif'
+    }
+    return <img src={nicPath} id="detection" />
+  }
+
   render() {
     return (
       <div className="App">
@@ -67,6 +80,7 @@ export default class App extends Component {
           Identify if a person <em>is</em> or <em>is NOT</em> Nicolas Cage with
           ease.
         </p>
+        {this.renderNicImage()}
         <header className="App-header">
           <Dropzone
             accept="image/jpeg, image/png"
@@ -74,16 +88,10 @@ export default class App extends Component {
             onDrop={this.onDrop.bind(this)}
           >
             <img src={this.state.thing} className="dropped-photo" />
-            <p>Drop your file here or click to browse.</p>
+            <p>Drop your image here or click to browse.</p>
           </Dropzone>
         </header>
         <div>
-          <p>{this.state.status}</p>
-          <p>
-            {Number(this.state.classification) < 0.6
-              ? 'Nic Detected '
-              : 'No Nic Detected'}
-          </p>
           <h2>Also: Available in Mobile App</h2>
           <img src="nic_clip.gif" />
           <p>
