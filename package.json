@@ -1,9 +1,10 @@
 {
-  "name": "distance_fix",
+  "name": "nicornotcom",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "face-api.js": "^0.15.1",
+    "npm": "^6.4.1",
     "react": "^16.6.0",
     "react-dom": "^16.6.0",
     "react-dropzone": "^7.0.1",
