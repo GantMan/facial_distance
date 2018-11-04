@@ -8,7 +8,8 @@ export default class App extends Component {
   state = {
     distance: 0,
     files: [],
-    thing: logo
+    thing: logo,
+    status: 'Loading Models'
   }
 
   async componentDidMount() {
@@ -16,11 +17,14 @@ export default class App extends Component {
     await faceapi.loadFaceLandmarkModel('/face_model')
     await faceapi.loadFaceRecognitionModel('/face_model')
     this.setState({
-      classification: 'done loading model'
+      status: 'Models Loaded'
     })
   }
 
   checkFaces = async () => {
+    this.setState({
+      status: 'Processing Faces'
+    })
     const nic = await faceapi.fetchImage('https://i.imgur.com/ASvFZxs.jpg')
     const nicDescript = await faceapi.allFacesSsdMobilenetv1(nic)
 
@@ -36,6 +40,7 @@ export default class App extends Component {
     )
 
     this.setState({
+      status: 'Done',
       classification: distance
     })
   }
@@ -73,10 +78,11 @@ export default class App extends Component {
           </Dropzone>
         </header>
         <div>
+          <p>{this.state.status}</p>
           <p>
-            {Number(this.state.classification) < 0.5
-              ? 'Nic Detected ' + this.state.classification
-              : 'No Nic Detected' + this.state.classification}
+            {Number(this.state.classification) < 0.6
+              ? 'Nic Detected '
+              : 'No Nic Detected'}
           </p>
           <h2>Also: Available in Mobile App</h2>
           <img src="nic_clip.gif" />
