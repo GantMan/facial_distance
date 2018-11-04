@@ -7,8 +7,7 @@ import './App.css'
 export default class App extends Component {
   state = {
     distance: 0,
-    files: [],
-    thing: logo,
+    graphic: logo,
     status: 'Loading Models'
   }
 
@@ -25,10 +24,10 @@ export default class App extends Component {
     this.setState({
       status: 'Processing Faces'
     })
-    const nic = await faceapi.fetchImage('https://i.imgur.com/ASvFZxs.jpg')
+    const nic = await faceapi.fetchImage('./nic_face.jpg')
     const nicDescript = await faceapi.allFacesSsdMobilenetv1(nic)
 
-    const otherURL = this.state.thing
+    const otherURL = this.state.graphic
     const other = await faceapi.fetchImage(otherURL)
     const otherDescript = await faceapi.allFacesSsdMobilenetv1(other)
 
@@ -48,7 +47,7 @@ export default class App extends Component {
   setFile = file => {
     const reader = new FileReader()
     reader.onload = e => {
-      this.setState({ classification: null, thing: e.target.result })
+      this.setState({ classification: null, graphic: e.target.result })
     }
 
     reader.readAsDataURL(file)
@@ -87,7 +86,7 @@ export default class App extends Component {
             className="photo-box"
             onDrop={this.onDrop.bind(this)}
           >
-            <img src={this.state.thing} className="dropped-photo" />
+            <img src={this.state.graphic} className="dropped-photo" />
             <p>Drop your image here or click to browse.</p>
           </Dropzone>
         </header>
