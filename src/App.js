@@ -32,35 +32,54 @@ export default class App extends Component {
     const otherURL = this.state.graphic
     const other = await faceapi.fetchImage(otherURL)
     const otherDescript = await faceapi.allFacesSsdMobilenetv1(other)
+    let closestFace = 1
 
-    const distance = faceapi.round(
-      faceapi.euclideanDistance(
-        nicDescript[0].descriptor,
-        otherDescript[0].descriptor
-      )
-    )
+    // const distance = faceapi.round(
+    //   faceapi.euclideanDistance(
+    //     nicDescript[0].descriptor,
+    //     otherDescript[0].descriptor
+    //   )
+    // )
 
     const dropped = this.refs.dropped
     const overlay = this.refs.overlay
     overlay.width = dropped.width
     overlay.height = dropped.height
 
-    const faces = otherDescript.map(det =>
-      det.forSize(overlay.width, overlay.height)
-    )
-    const { box } = faces[0].alignedRect
-    const boxesWithText = [
-      new faceapi.BoxWithText(
-        new faceapi.Rect(box.x, box.y, box.width, box.height),
-        'some Face'
+    let boxesWithText = []
+    const faces = otherDescript.map(det => {
+      // Distance of each face
+      let distance = faceapi.round(
+        faceapi.euclideanDistance(nicDescript[0].descriptor, det.descriptor)
       )
-    ]
+
+      if (distance < threshHold) {
+        const face = det.forSize(overlay.width, overlay.height)
+        closestFace = distance
+        const { box } = face.alignedRect
+        boxesWithText.push(
+          new faceapi.BoxWithText(
+            new faceapi.Rect(box.x, box.y, box.width, box.height),
+            'Nic'
+          )
+        )
+      }
+
+      // return det.forSize(overlay.width, overlay.height)
+    })
+    // const { box } = faces[0].alignedRect
+    // boxesWithText = [
+    //   new faceapi.BoxWithText(
+    //     new faceapi.Rect(box.x, box.y, box.width, box.height),
+    //     'Nic'
+    //   )
+    // ]
 
     faceapi.drawDetection(this.refs.overlay, boxesWithText)
 
     this.setState({
       status: 'Ready',
-      classification: distance
+      classification: closestFace
     })
   }
 
