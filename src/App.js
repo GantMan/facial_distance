@@ -4,6 +4,8 @@ import logo from './NicOrNot.png'
 import Dropzone from 'react-dropzone'
 import './App.css'
 
+const threshHold = 0.6
+
 export default class App extends Component {
   state = {
     distance: 0,
@@ -38,6 +40,24 @@ export default class App extends Component {
       )
     )
 
+    const dropped = this.refs.dropped
+    const overlay = this.refs.overlay
+    overlay.width = dropped.width
+    overlay.height = dropped.height
+
+    const faces = otherDescript.map(det =>
+      det.forSize(overlay.width, overlay.height)
+    )
+    const { box } = faces[0].alignedRect
+    const boxesWithText = [
+      new faceapi.BoxWithText(
+        new faceapi.Rect(box.x, box.y, box.width, box.height),
+        'some Face'
+      )
+    ]
+
+    faceapi.drawDetection(this.refs.overlay, boxesWithText)
+
     this.setState({
       status: 'Ready',
       classification: distance
@@ -64,7 +84,9 @@ export default class App extends Component {
     if (this.state.status === 'Ready') {
       if (this.state.classification) {
         nicPath =
-          Number(this.state.classification) < 0.6 ? './yes.png' : './no.png'
+          Number(this.state.classification) < threshHold
+            ? './yes.png'
+            : './no.png'
       }
     } else {
       nicPath = './processingFaces.gif'
@@ -86,7 +108,20 @@ export default class App extends Component {
             className="photo-box"
             onDrop={this.onDrop.bind(this)}
           >
-            <img src={this.state.graphic} className="dropped-photo" />
+            <img
+              src={this.state.graphic}
+              className="dropped-photo"
+              ref="dropped"
+            />
+            <canvas
+              style={{
+                position: 'absolute',
+                top: 20,
+                left: 20,
+                maxHeight: '400px'
+              }}
+              ref="overlay"
+            />
             <p>Drop your image here or click to browse.</p>
           </Dropzone>
         </header>
