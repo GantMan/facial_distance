@@ -48,7 +48,7 @@ export default class NicWeb extends Component {
     overlay.height = dropped.height
 
     let boxesWithText = []
-    const faces = otherDescript.map(det => {
+    otherDescript.map(det => {
       // Distance of each face
       let distance = faceapi.round(
         faceapi.euclideanDistance(nicDescript[0].descriptor, det.descriptor)
@@ -65,16 +65,7 @@ export default class NicWeb extends Component {
           )
         )
       }
-
-      // return det.forSize(overlay.width, overlay.height)
     })
-    // const { box } = faces[0].alignedRect
-    // boxesWithText = [
-    //   new faceapi.BoxWithText(
-    //     new faceapi.Rect(box.x, box.y, box.width, box.height),
-    //     'Nic'
-    //   )
-    // ]
 
     faceapi.drawDetection(this.refs.overlay, boxesWithText)
 
